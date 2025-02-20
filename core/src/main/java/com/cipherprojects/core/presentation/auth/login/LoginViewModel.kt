@@ -2,16 +2,23 @@ package com.cipherprojects.core.presentation.auth.login
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.cipherprojects.core.data.preferences.AppPreferences
+import com.cipherprojects.core.domain.auth.LoginUserUseCase
 import com.cipherprojects.core.domain.models.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
-class LoginViewModel : ViewModel() {
+class LoginViewModel(
+    private val preferences: AppPreferences,
+    private val loginUserUseCase: LoginUserUseCase
+) : ViewModel() {
 
-    private val _username = MutableStateFlow("")
+    private val _username = MutableStateFlow(preferences.getRememberedUsername())
     val username: StateFlow<String> get() = _username
 
-    private val _password = MutableStateFlow("")
+    private val _password = MutableStateFlow(preferences.getRememberedPassword())
     val password: StateFlow<String> get() = _password
 
     private val _rememberMe = MutableStateFlow(true)
@@ -61,9 +68,27 @@ class LoginViewModel : ViewModel() {
             return
         }
 
+        viewModelScope.launch {
+            val result = loginUserUseCase(
+                username = username,
+                password = password
+            )
+            if (result != null) {
+                _response.value = Result(
+                    success = true,
+                    message = "Login successful!"
+                )
+
+                if (_rememberMe.value) {
+                    preferences.setUsernameToRemember(username)
+                    preferences.setPasswordToRemember(password)
+                }
+                return@launch
+            }
+        }
         _response.value = Result(
-            success = true,
-            message = "Login successful!"
+            success = false,
+            message = "Login failed."
         )
     }
 }

@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.cipherprojects.cipherkit.ui.theme.CipherKitTheme
-import com.cipherprojects.core.presentation.auth.login.LoginScreen
+import com.cipherprojects.core.presentation.auth.AuthNavigation
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,12 +21,12 @@ class MainActivity : ComponentActivity() {
             CipherKitTheme(
                 darkTheme = darkTheme
             ) {
-                LoginScreen(
+                AuthNavigation(
                     darkTheme = darkTheme,
-                    toggleDarkTheme = {
-                        darkTheme = !darkTheme
-                    },
-                    onLoginSuccessful = {}
+                    toggleDarkTheme = { darkTheme = !darkTheme },
+                    onLoginSuccessful = {
+                        println("Login successful. Now what?")
+                    }
                 )
             }
         }

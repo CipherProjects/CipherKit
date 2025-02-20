@@ -11,7 +11,7 @@ class AuthRepositoryImpl(
         return userDao.loginUser(username = username, password = password)
     }
 
-    override suspend fun registerUser(user: User): User? {
+    override suspend fun registerUser(user: User): Long {
         return userDao.registerUser(user)
     }
 

@@ -1,4 +1,4 @@
-package com.cipherprojects.core.presentation.auth.login
+package com.cipherprojects.core.presentation.auth.register
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,6 @@ import androidx.compose.material.icons.outlined.DarkMode
 import androidx.compose.material.icons.outlined.LightMode
 import androidx.compose.material.icons.outlined.Password
 import androidx.compose.material3.Button
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -44,26 +43,22 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.cipherprojects.core.presentation.components.ForgotPasswordDialog
 import com.cipherprojects.core.presentation.components.NormalTextField
 import com.cipherprojects.core.presentation.components.PasswordTextField
-import com.cipherprojects.core.presentation.components.RememberMeCheckbox
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+fun RegisterScreen(
     darkTheme: Boolean,
     toggleDarkTheme: () -> Unit,
-    onLoginSuccessful: () -> Unit,
-    onRegisterAccount: () -> Unit
+    onRegisterSuccessful: () -> Unit
 ) {
-    val viewModel: LoginViewModel = koinViewModel()
+    val viewModel: RegisterViewModel = koinViewModel()
     val username by viewModel.username.collectAsState()
     val password by viewModel.password.collectAsState()
-    val rememberMe by viewModel.rememberMe.collectAsState()
-    val showPasswordDialog by viewModel.showForgotPasswordDialog.collectAsState()
+    val confirmPassword by viewModel.confirmPassword.collectAsState()
     val response by viewModel.response.collectAsState()
 
     val focusManager = LocalFocusManager.current
@@ -79,8 +74,8 @@ fun LoginScreen(
             }
 
             if (result.success) {
-                println("Login successful.")
-                onLoginSuccessful()
+                println("Registration successful.")
+                onRegisterSuccessful()
             }
         }
     }
@@ -89,7 +84,7 @@ fun LoginScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Login"
+                        text = "Register"
                     )
                 },
                 actions = {
@@ -129,7 +124,7 @@ fun LoginScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "Welcome back!",
+                        text = "Create an Account!",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.W500,
                         maxLines = 1,
@@ -138,7 +133,7 @@ fun LoginScreen(
                         modifier = Modifier.padding(start = 4.dp)
                     )
                     Text(
-                        text = "Please enter your credentials.",
+                        text = "It's fast and easy",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.W400,
                         maxLines = 2,
@@ -178,64 +173,58 @@ fun LoginScreen(
                         ),
                         keyboardActions = KeyboardActions(
                             onDone = {
+                                focusManager.moveFocus(FocusDirection.Next)
+                            }
+                        )
+                    )
+
+                    PasswordTextField(
+                        value = confirmPassword,
+                        onValueChange = viewModel::onConfirmPasswordChange,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 4.dp),
+                        label = "Confirm Password",
+                        leadingIcon = Icons.Outlined.Password,
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
                                 focusManager.clearFocus()
                             }
                         )
                     )
 
-                    RememberMeCheckbox(
-                        rememberMe = rememberMe,
-                        toggleRememberMe = viewModel::toggleRememberMe
-                    )
                     Spacer(modifier = Modifier.height(8.dp))
-
                     Button(
                         onClick = {
-                            viewModel.login()
+                            viewModel.register()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
                     ) {
                         Text(
-                            text = "LOGIN",
+                            text = "Register",
                             textAlign = TextAlign.Center,
                             fontWeight = FontWeight.W500,
                             fontSize = 16.sp
                         )
                     }
 
+
                     TextButton(
-                        onClick = viewModel::toggleForgotPasswordDialog,
+                        onClick = onRegisterSuccessful,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text(
-                            text = "Forgot Password?",
+                            text = "Already Have an Account",
                             color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }
-
-                    ElevatedButton(
-                        onClick = onRegisterAccount,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                    ) {
-                        Text(
-                            text = "Create New Account",
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.W500,
-                            fontSize = 16.sp
                         )
                     }
                 }
             }
         }
-    }
-
-    if (showPasswordDialog) {
-        ForgotPasswordDialog(
-            onDismiss = viewModel::toggleForgotPasswordDialog
-        )
     }
 }

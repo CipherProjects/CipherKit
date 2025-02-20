@@ -14,15 +14,17 @@ class RegisterUserUseCase(
                 return null
             }
 
-            val newUser = repository.registerUser(user)
+            val newUserId = repository.registerUser(user)
 
-            if (newUser != null) {
+            if (newUserId > 0) {
                 Log.d("Auth", "Registration successful.")
+
+                val newUser = user.copy(id = newUserId.toInt())
+                newUser
             } else {
                 Log.e("Auth", "Registration failed. Unable to create user.")
+                null
             }
-
-            newUser
         } catch (e: Exception) {
             Log.e("Auth", "Registration error: ${e.message}")
             null

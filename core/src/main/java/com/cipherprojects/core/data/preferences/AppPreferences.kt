@@ -14,6 +14,10 @@ class AppPreferences(
         private const val PREFERENCES_NAME = "app_preferences"
         private const val FIRST_LAUNCH = "first_launch"
         private const val DARK_THEME = "dark_theme"
+
+        private const val REMEMBER_ME = "remember_me"
+        private const val USERNAME = "username"
+        private const val PASSWORD = "password"
     }
 
     fun isFirstLaunch(): Boolean {
@@ -30,5 +34,29 @@ class AppPreferences(
 
     fun toggleDarkTheme() {
         sharedPreferences.edit().putBoolean(DARK_THEME, !isDarkTheme()).apply()
+    }
+
+    fun isRememberMeEnabled(): Boolean {
+        return sharedPreferences.getBoolean(REMEMBER_ME, true)
+    }
+
+    fun toggleRememberMe() {
+        sharedPreferences.edit().putBoolean(REMEMBER_ME, !isRememberMeEnabled()).apply()
+    }
+
+    fun getRememberedUsername(): String {
+        return sharedPreferences.getString(USERNAME, "") ?: ""
+    }
+
+    fun setUsernameToRemember(value: String) {
+        sharedPreferences.edit().putString(USERNAME, value).apply()
+    }
+
+    fun getRememberedPassword(): String {
+        return sharedPreferences.getString(PASSWORD, "") ?: ""
+    }
+
+    fun setPasswordToRemember(value: String) {
+        sharedPreferences.edit().putString(PASSWORD, value).apply()
     }
 }
