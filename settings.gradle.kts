@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "CipherKit"
 include(":app")
- 
+include(":core")
